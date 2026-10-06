@@ -1,52 +1,51 @@
-# CliniCIRCA
+<p align="center">
+  <img src="assets/CliniCIRCA_Logo.png" alt="CliniCIRCA logo: a clinician beside a discharge summary, inside a ring of timeline points" width="160">
+</p>
 
-A three-stage LLM pipeline that turns a free-text hospital discharge summary
-into a dated timeline of clinical events and then into a chronological prose
-summary.
+<h1 align="center">CliniCIRCA</h1>
 
-```
-discharge summary
-   │  Stage 1   atomic event extraction      "- The patient was started on IV NAC"
-   │  Stage 1   postprocessing (loop collapse)
-   │  Stage 2   time tagging                 "- [2162-08-14] [EXACT] The patient was started on IV NAC"
-   │  Stage 2   postprocessing (format repair + loop collapse)
-   ▼  Stage 3   prose summary                "On 2162-08-14, the patient was started on ..."
-```
+<p align="center"><b>A Modular LLM Framework for Constructing Longitudinal Mental Health Patient Journeys from Raw EHR Narratives</b></p>
 
-Every LLM stage can run with either
+<p align="center">
+  Aiwei Ivy Zhang<sup>1</sup>,
+  Nimra Ishfaq<sup>2</sup>,
+  Mohit Chandra<sup>1</sup>,
+  Santiago Alvarez Lesmes<sup>3</sup>,
+  Adam Coscia<sup>1</sup>,
+  Khatiya Chelidze Moon<sup>3</sup>,
+  Xiaohan Ding<sup>1</sup>,
+  Munmun De Choudhury<sup>1</sup><br>
+  <sup>1</sup>Georgia Institute of Technology &nbsp;
+  <sup>2</sup>University of Texas at Austin &nbsp;
+  <sup>3</sup>Northwell Health
+</p>
 
-- **open-source models** from Hugging Face, served locally with [vLLM](https://github.com/vllm-project/vllm), or
-- **Gemini on Google Cloud Vertex AI**.
+<p align="center">
+  <a href="https://arxiv.org/abs/2609.19585"><img src="https://img.shields.io/badge/arXiv-2609.19585-b31b1b" alt="arXiv 2609.19585"></a>
+  <a href="https://arxiv.org/pdf/2609.19585"><img src="https://img.shields.io/badge/Paper-PDF-EF7931" alt="Paper PDF"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-6EC4BB" alt="MIT license"></a>
+</p>
 
-The repository ships with one **fully synthetic** patient, so the whole
-pipeline can be run without access to any real clinical data.
+In mental health care, clinicians reason over a patient's journey: how
+symptoms, diagnoses, treatments and life events unfold over time. That journey
+is usually buried in free-text notes, where events are repeated, told out of
+order, or dated only relative to each other. **CliniCIRCA**
+(**C**alendar-anchored, **I**mprecision-aware **R**econstruction of
+**C**linical **A**nnals) is a multi-stage LLM framework that turns a raw
+discharge summary into a dated timeline of clinical events, records how
+precisely each date is known, and then writes a chronological summary.
 
-## Repository layout
+Paper - arXiv: https://arxiv.org/pdf/2609.19585
 
-```
-dataset/
-  sample_patient.parquet          the synthetic patient (pipeline input)
-  make_sample_patient.py          script that writes it; the note text is readable here
-pipeline/
-  stage1_event_extraction/
-    generation_prompts/           system + user prompts and the one worked example
-    open_source/                  event_extraction.py, llm_utils.py, agent_specs.json
-    vertex_gemini/                event_extraction_gemini.py, llm_utils_gemini.py, agent_specs.json
-  stage1_postprocessing/          loop_collapse.py, run_stage1_postprocessing.py
-  stage2_time_tagging/
-    generation_prompts/
-    open_source/                  time_tagging.py, llm_utils.py, agent_specs.json
-    vertex_gemini/                time_tagging_gemini.py, llm_utils_gemini.py, agent_specs.json
-  stage2_postprocessing/          repair_regex.py, loop_collapse.py, run_stage2_postprocessing.py
-  stage3_summarization/
-    generation_prompts/
-    open_source/                  summarization.py, llm_utils.py, agent_specs.json
-    vertex_gemini/                summarization_gemini.py, llm_utils_gemini.py, agent_specs.json
-run_pipeline.sh                   runs all five steps
-```
+This repository contains the full pipeline. Every LLM stage runs either with
+open-source models from Hugging Face, served locally with
+[vLLM](https://github.com/vllm-project/vllm), or with Gemini on Google Cloud
+Vertex AI. A **fully synthetic** patient is included, so the pipeline runs
+without any real clinical data.
 
-Each folder is self-contained. `llm_utils.py`, `llm_utils_gemini.py` and
-`loop_collapse.py` are identical copies wherever they appear.
+<p align="center"><img src="assets/CliniCIRCA_Pipeline.png" alt="A discharge summary, its Stage 2 timeline with a date and tag on every event, and its Stage 3 chronological summary" width="100%"></p>
+
+<p align="center"><sub>A discharge summary (left), the Stage 2 timeline with a date and tag on every event (middle), and the Stage 3 summary (right). Excerpts; <code>&lt;...&gt;</code> marks omitted text.</sub></p>
 
 ## Setup
 
