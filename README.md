@@ -47,7 +47,45 @@ without any real clinical data.
 
 <p align="center"><sub>A discharge summary (left), the Stage 2 timeline with a date and tag on every event (middle), and the Stage 3 summary (right). Excerpts; <code>&lt;...&gt;</code> marks omitted text.</sub></p>
 
-## Setup
+## How CliniCIRCA works
+
+1. **Extract atomic events (Stage 1).** An LLM lists every clinically meaningful
+   fact in the note as a short, self-contained bullet, in document order.
+2. **Anchor each event in time (Stage 2).** Given the note, its anchor dates
+   (birth, admission, discharge) and the events, an LLM gives every event a
+   date and a tag saying how that date is known.
+3. **Summarize the timeline (Stage 3).** An LLM writes a chronological summary
+   using only the facts and dates in the tagged timeline.
+
+Rule-based postprocessing after Stages 1 and 2 fixes formatting slips and
+removes looped output, without changing any event.
+
+| Step | What it does | Code |
+|---|---|---|
+| **Stage 1: event extraction** | One worked example (prompt v1). One fact per bullet; abbreviations expanded, negations kept | `pipeline/stage1_event_extraction` |
+| **Stage 1 postprocessing** | Models that hit their token limit can repeat a block of bullets until cut off; keeps one copy of that repeating tail. Repeats elsewhere are kept, since they can be real | `pipeline/stage1_postprocessing` |
+| **Stage 2: time tagging** | Zero-shot (prompt v2). A date and one of four tags per event | `pipeline/stage2_time_tagging` |
+| **Stage 2 postprocessing** | Repairs bullets, tag spelling, date padding and tag position, then the same loop collapse. Lines that still do not match the format are kept and counted in `malformed_count` | `pipeline/stage2_postprocessing` |
+| **Stage 3: summary** | Zero-shot (prompt v1). Chronological prose built only from the timeline; the original note is used for wording only | `pipeline/stage3_summarization` |
+
+Every LLM stage has an `open_source/` (vLLM) and a `vertex_gemini/` version
+with the same prompts and output columns. Each folder is self-contained:
+`llm_utils.py`, `llm_utils_gemini.py` and `loop_collapse.py` are identical
+copies wherever they appear.
+
+**Temporal tags (Stage 2)**
+
+| Tag | Meaning | Example |
+|---|---|---|
+| `[DATE] [EXACT]` | a date is written in the event | `[2162-08-17] [EXACT] NAC was stopped on 2162-8-17` |
+| `[DATE] [APPROX]` | timing follows from an anchor date | `[2162-08-14 to 2162-08-19] [APPROX] She had a 1:1 sitter` |
+| `[PRE ADM]` | history or a state before admission | `[PRE ADM] The patient has generalized anxiety disorder` |
+| `[INDETERMINATE]` | timing cannot be determined | |
+
+`DATE` is `YYYY-MM-DD`, `YYYY-MM` or `YYYY`, or a range `START to END`, and is
+never more precise than the note.
+
+## Installation
 
 Python 3.11. With conda:
 
@@ -111,6 +149,32 @@ print(df.loc[0, "stage3_summary"])               # prose summary
 LLM steps skip output files that already exist, so an interrupted run resumes
 where it stopped. Pass `--overwrite` to a script to redo its output.
 
+<details>
+<summary><b>Running the steps one at a time</b></summary>
+
+Every script has `--help`. The five commands in `run_pipeline.sh` are:
+
+```bash
+OUT=outputs/open_source/qwen3_30b_a3b_instruct_2507
+python pipeline/stage1_event_extraction/open_source/event_extraction.py \
+    --input_parquet dataset/sample_patient.parquet --output_dir $OUT/stage1 \
+    --agent_name qwen3_30b_a3b_instruct_2507
+python pipeline/stage1_postprocessing/run_stage1_postprocessing.py \
+    --input_dir $OUT/stage1 --output_dir $OUT/stage1_postprocessing
+python pipeline/stage2_time_tagging/open_source/time_tagging.py \
+    --input_dir $OUT/stage1_postprocessing --output_dir $OUT/stage2 \
+    --agent_name qwen3_30b_a3b_instruct_2507
+python pipeline/stage2_postprocessing/run_stage2_postprocessing.py \
+    --input_dir $OUT/stage2 --output_dir $OUT/stage2_postprocessing
+python pipeline/stage3_summarization/open_source/summarization.py \
+    --input_dir $OUT/stage2_postprocessing --output_dir $OUT/stage3 \
+    --agent_name qwen3_30b_a3b_instruct_2507
+```
+
+For Gemini, use the `vertex_gemini/` scripts with the `_gemini.py` suffix.
+
+</details>
+
 ## Open-source models (vLLM)
 
 `agent_specs.json` in each `open_source/` folder lists the models used in the
@@ -143,60 +207,6 @@ per 200-row chunk through Cloud Storage. Batch jobs cost half as much but take
 minutes to hours. Staged files are deleted once results are saved (if a job
 fails they are kept for debugging, and the script prints where).
 
-## Running steps one at a time
-
-Every script has `--help`. The five commands in `run_pipeline.sh` are:
-
-```bash
-OUT=outputs/open_source/qwen3_30b_a3b_instruct_2507
-python pipeline/stage1_event_extraction/open_source/event_extraction.py \
-    --input_parquet dataset/sample_patient.parquet --output_dir $OUT/stage1 \
-    --agent_name qwen3_30b_a3b_instruct_2507
-python pipeline/stage1_postprocessing/run_stage1_postprocessing.py \
-    --input_dir $OUT/stage1 --output_dir $OUT/stage1_postprocessing
-python pipeline/stage2_time_tagging/open_source/time_tagging.py \
-    --input_dir $OUT/stage1_postprocessing --output_dir $OUT/stage2 \
-    --agent_name qwen3_30b_a3b_instruct_2507
-python pipeline/stage2_postprocessing/run_stage2_postprocessing.py \
-    --input_dir $OUT/stage2 --output_dir $OUT/stage2_postprocessing
-python pipeline/stage3_summarization/open_source/summarization.py \
-    --input_dir $OUT/stage2_postprocessing --output_dir $OUT/stage3 \
-    --agent_name qwen3_30b_a3b_instruct_2507
-```
-
-For Gemini, use the `vertex_gemini/` scripts with the `_gemini.py` suffix.
-
-## What each stage does
-
-**Stage 1: event extraction** (prompt v1, one worked example). The model lists
-every clinically meaningful fact in the note as a short bullet, in document
-order, expanding abbreviations and keeping negations.
-
-**Stage 1 postprocessing.** Models that hit their token limit sometimes repeat
-the same block of bullets until they are cut off. `loop_collapse.py` keeps one
-copy of that repeating tail. Repeats anywhere else are kept, since they can be
-real.
-
-**Stage 2: time tagging** (prompt v2, zero-shot). Given the note, the anchor
-dates (birth, admission, discharge, age) and the Stage 1 events, the model
-prefixes each event with one tag:
-
-| Tag | Meaning | Example |
-|---|---|---|
-| `[DATE] [EXACT]` | a date is written in the event | `[2162-08-17] [EXACT] NAC was stopped on 2162-8-17` |
-| `[DATE] [APPROX]` | timing follows from an anchor date | `[2162-08-14 to 2162-08-19] [APPROX] She had a 1:1 sitter` |
-| `[PRE ADM]` | history or a state before admission | `[PRE ADM] The patient has generalized anxiety disorder` |
-| `[INDETERMINATE]` | timing cannot be determined | |
-
-**Stage 2 postprocessing.** `repair_regex.py` fixes formatting slips (bullet
-characters, tag spelling, unpadded dates, tags at the end of the line) and
-then the loop collapse runs again. Lines that still do not match the expected
-format are kept and counted in `malformed_count`.
-
-**Stage 3: summary** (prompt v1, zero-shot). The model writes a chronological
-prose summary using only facts and dates from the Stage 2 timeline. The
-original note is given for wording only.
-
 ## Data
 
 `dataset/sample_patient.parquet` holds one invented patient: a discharge
@@ -204,7 +214,14 @@ summary for an intentional acetaminophen overdose with a psychiatric history.
 The patient, IDs, dates and note text were written from scratch for this
 repository. The worked example in the Stage 1 prompt is a second, equally
 invented patient. The file has the same columns and types as the MIMIC-III
-discharge-summary extract used in the study:
+discharge-summary extract used in the study.
+
+Only `SUBJECT_ID`, `HADM_ID`, `TEXT` and the anchor-date columns are required,
+so any parquet file with those columns can be passed with
+`INPUT=your_file.parquet bash run_pipeline.sh ...`.
+
+<details>
+<summary><b>Input columns</b></summary>
 
 | Column | Description |
 |---|---|
@@ -215,9 +232,7 @@ discharge-summary extract used in the study:
 | `ALL_ICD9_CODES`, `PSYCH_ICD9_CODES`, `NUM_ICD9_CODES`, `NUM_PSYCH_ICD9_CODES` | diagnosis codes |
 | `DS_COMPONENTS`, `NOTE_LENGTH` | note metadata |
 
-Only `SUBJECT_ID`, `HADM_ID`, `TEXT` and the anchor-date columns are required,
-so any parquet file with those columns can be passed with
-`INPUT=your_file.parquet bash run_pipeline.sh ...`.
+</details>
 
 ### Using MIMIC-III
 
@@ -232,3 +247,27 @@ human review. On Vertex AI this includes:
 - turning off prompt caching for the project (the Gemini scripts check this
   setting on every run and print a warning if it is on), and
 - requesting Google's exception to prompt logging for abuse monitoring.
+
+## Citation
+
+Please cite our paper if you use CliniCIRCA:
+
+```bibtex
+@misc{zhang2026clinicirca,
+  title={CliniCIRCA: A Modular LLM Framework for Constructing Longitudinal Mental Health Patient Journeys from Raw EHR Narratives},
+  author={Aiwei Ivy Zhang and Nimra Ishfaq and Mohit Chandra and Santiago Alvarez Lesmes and Adam Coscia and Khatiya Chelidze Moon and Xiaohan Ding and Munmun De Choudhury},
+  year={2026},
+  eprint={2609.19585},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2609.19585},
+}
+```
+
+## Contact
+
+Aiwei Ivy Zhang | azhang677@gatech.edu
+
+## License
+
+[MIT](LICENSE)
