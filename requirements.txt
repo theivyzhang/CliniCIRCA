@@ -1,0 +1,12 @@
+# Core
+pandas==2.3.3
+pyarrow==21.0.0
+tqdm==4.67.1
+
+# Gemini on Vertex AI
+google-genai==2.8.0
+google-cloud-storage==3.13.0
+
+# Open-source models (Linux with NVIDIA GPUs; also installs PyTorch and transformers).
+# Using Vertex AI only? You can leave this line out.
+vllm==0.17.1

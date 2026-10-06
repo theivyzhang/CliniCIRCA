@@ -1,0 +1,84 @@
+Admission Date:  [**2171-1-9**]              Discharge Date:   [**2171-1-12**]
+
+Date of Birth:  [**2104-6-2**]             Sex:   M
+
+Service: MEDICINE
+
+Allergies:
+No Known Allergies / Adverse Drug Reactions
+
+Attending:[**First Name3 (LF) 80211**]
+Chief Complaint:
+Shortness of breath
+
+Major Surgical or Invasive Procedure:
+None
+
+History of Present Illness:
+Mr. [**Known lastname 80045**] is a 66 yo male with COPD on 2L home O2
+who presents with 3 days of worsening SOB and productive cough with
+green sputum. His wife noted he was more fatigued. He denies chest
+pain or fever. He was last hospitalized for a COPD exacerbation in
+[**2169**]. In the ED, T 100.9, HR 108, BP 142/84, RR 26, SpO2 86% on
+2L NC. CXR showed a RLL infiltrate. He received albuterol and
+ipratropium nebs, methylprednisolone 125 mg IV, and ceftriaxone.
+
+Past Medical History:
+1. COPD, on 2L home oxygen
+2. Hypertension
+3. s/p right inguinal hernia repair
+
+Social History:
+Lives with his wife. Former smoker, quit in [**2165**] after 45
+pack-years. No alcohol use.
+
+Family History:
+Noncontributory.
+
+Physical Exam:
+General: Mild respiratory distress, speaking in short sentences
+Lungs: Diffuse expiratory wheezes, crackles at the right base
+CV: Tachycardic, regular rhythm, no murmurs
+
+Pertinent Results:
+[**2171-1-9**] 03:20PM   WBC-14.2 HGB-13.8 PLT-251
+[**2171-1-9**] 03:20PM   GLUCOSE-131 CREAT-0.9 SODIUM-137
+CXR [**2171-1-9**]: Right lower lobe opacity concerning for pneumonia.
+
+Brief Hospital Course:
+# COPD exacerbation with RLL pneumonia: He was treated with
+prednisone 40 mg daily, standing nebulizers, and azithromycin plus
+ceftriaxone, changed to PO levofloxacin on [**2171-1-11**]. His O2
+requirement returned to his baseline of 2L by hospital day 3. He
+did not require BiPAP.
+# Hypertension: Lisinopril was continued.
+
+Medications on Admission:
+1. Tiotropium 18 mcg inhaled daily
+2. Albuterol inhaler 2 puffs Q6H PRN
+3. Lisinopril 10 mg PO daily
+
+Discharge Medications:
+1. Tiotropium 18 mcg inhaled daily
+2. Albuterol inhaler 2 puffs Q6H PRN
+3. Lisinopril 10 mg PO daily
+4. Prednisone 40 mg PO daily for 2 more days
+5. Levofloxacin 750 mg PO daily for 3 more days
+
+Discharge Disposition:
+Home
+
+Discharge Diagnosis:
+COPD exacerbation
+Right lower lobe pneumonia
+
+Discharge Condition:
+Stable, on baseline 2L home oxygen.
+
+Discharge Instructions:
+You were admitted for a COPD flare and pneumonia. Please finish
+your prednisone and levofloxacin.
+
+Followup Instructions:
+Follow up with your pulmonologist, Dr. [**Last Name (STitle) 80377**], on
+[**2171-1-23**] at 2:00 PM.

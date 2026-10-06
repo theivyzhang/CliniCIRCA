@@ -1,0 +1,5 @@
+DISCHARGE_SUMMARY:
+{discharge_summary}
+
+CLINICAL_EVENTS_TIMELINE:
+{clinical_events_timeline}

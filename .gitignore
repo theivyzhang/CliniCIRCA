@@ -1,0 +1,13 @@
+# Pipeline outputs
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+*.tmp
+.venv/
+
+# Credentials
+.env
+*credentials*.json
+*service-account*.json

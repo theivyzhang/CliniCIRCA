@@ -1,0 +1,11 @@
+ANCHOR_DATES:
+- Date of Birth: {dob}
+- Admission Date: {admission_date}
+- Discharge Date: {discharge_date}
+- Patient Age at Chart Date: {patient_age}
+
+DISCHARGE_SUMMARY:
+{discharge_summary}
+
+ATOMIC_CLINICAL_EVENTS:
+{atomic_clinical_events}

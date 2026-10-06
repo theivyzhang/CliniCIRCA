@@ -1,0 +1,124 @@
+You will convert a tagged clinical event list into a temporally structured prose summary.
+
+# INPUTS
+
+You are given two inputs:
+1. ORIGINAL DISCHARGE SUMMARY — the source note. Use it only to clarify wording, expand
+   abbreviations, or resolve unclear phrasing. Do NOT take any fact from it that is not
+   present in the tagged event list.
+2. TAGGED EVENT LIST — the authoritative source. Every fact and every date in your summary
+   must come from this list.
+
+# TEMPORAL RENDERING RULES (mandatory, no exceptions)
+
+Each event carries a temporal tag. Render each tag exactly as specified:
+
+- [YYYY-MM-DD] [EXACT]: "On YYYY-MM-DD, ..."
+- [YYYY-MM-DD] [APPROX]: "Approximately on YYYY-MM-DD, ..."
+- [YYYY-MM-DD to YYYY-MM-DD] [APPROX]: "Approximately from YYYY-MM-DD to YYYY-MM-DD, ..."
+- [YYYY] [EXACT]: "In YYYY, ..."
+- [PRE ADM]: "Before admission, ..."
+
+Rules:
+- Write all dates in ISO format (YYYY-MM-DD), zero-padded, exactly as given in the tag.
+- The word "approximately" attaches to the DATE, not to the event. The event is certain; only its timing is approximate. Never write "the patient was likely admitted" or "it is likely that X happened."
+- Reproduce each event’s negations and hedges exactly as written; do not add, delete, or swap them.
+- If the event text restates timing that the tag already supplies (e.g. "admitted on 2122-5-19", "on postoperative day two"), delete the restatement from the sentence.
+- You may adjust grammar and tense minimally so the sentence reads correctly after the temporal prefix. Do not change clinical content.
+
+# DEDUPLICATION AND MERGING
+
+- **Exact duplicates:** if two events have the same tag and the same content, output the content once.
+- **Subsumption:** if one event's content is fully contained in another's (e.g. "The patient is female" and "The patient is a 19 year-old female"), output only the more specific one.
+- **Merging:** events with identical tags (same date, same type) must be combined under a single temporal prefix, joined into one or a few sentences; never repeat the prefix, and never merge across different dates or types. This includes recombining events split from a single clinical statement (e.g. "Her incision was clean." / "...was dry." / "...was intact.").
+- Merge date of birth, age, and sex into a single opening demographic sentence.
+
+# INCLUDE
+
+Include only the following categories. If an event does not fall into one of these
+categories, omit it.
+
+- **Patient demographics:** date of birth, age, sex.
+- **The reason for admission:** the clinical problem or finding that led to this admission, and any diagnostic workup or counseling directly relating to it.
+- **In-stay events,** limited to these types:
+  - procedures and surgeries performed
+  - intraoperative findings and repairs
+  - admissions to and transfers between services or units
+  - intubation, extubation, and other airway or ventilation events
+  - placement or removal of devices, lines, tubes, or catheters
+  - treatments or interventions started or stopped
+  - diagnoses made or revised during the stay
+  - consultations obtained
+- **The discharge:** date of discharge, disposition, discharge condition, and follow-up instructions.
+- **Social history,** unless stated that it’s non-contributory or insignificant in the source materials.
+- **Medications on admission and medications at discharge** are each rendered as a line-separated list under their own temporal prefix, one medication per line, copied verbatim from the event text. These are the only lists in the output; all other content is continuous prose (see example):
+```
+Before admission, the patient was taking:
+- Medicine A at X dosage
+- Medicine B
+
+Approximately on [discharge date], the patient was discharged on:
+- Medicine C for Y duration
+- Medicine D via route Z
+```
+
+# EXCLUDE
+
+Exclude the following categories entirely:
+
+- Laboratory values and laboratory results.
+- Vital sign values.
+- Physical examination findings, including normal and benign findings, and descriptions of body habitus or affect.
+- Statements that a parameter or status remained stable, unchanged, or within normal limits.
+- Past medical history, past surgical history, and prior events that are not the reason for this admission, UNLESS the condition actively complicated the hospital course, required a consultation, or significantly altered medical management during the stay.
+- Allergies.
+
+# FIDELITY
+
+- Use only facts present in the tagged event list.
+- Do not infer, interpret, diagnose, or add clinical judgment.
+- Do not alter any numeric value, date, medication name, dose, route, or frequency.
+- Preserve negations exactly. "No evidence of metastatic disease" must never become "evidence of metastatic disease."
+- Retain de-identification placeholders (e.g. [Last Name (STitle) 9125]) exactly as written. Do not expand, guess, or replace them.
+- Do not add a heading, preamble, commentary, or closing statement.
+
+# ORDER AND FORMAT
+
+- Output continuous prose, except for the two medication lists specified above. No bullet points, no headings, no tables.
+- Open with the demographic sentence.
+- Then order all remaining content chronologically by the start date of its tag. For events sharing a start date, keep the order in which they appear in the tagged event list.
+- Place [PRE ADM] events, which carry no date, together as one "Before admission" group immediately before the admission date.
+- Start a new paragraph at each of: before admission; the admission date; the discharge date.
+
+# WORKED CONVERSIONS
+
+These examples show RENDERING only. Whether an event is included is governed by the
+INCLUDE and EXCLUDE rules above.
+
+Input:  - [2000-01-01] [EXACT] The patient was admitted on 2000-01-01.
+Output: On 2000-01-01, the patient was admitted.
+
+Input:  - [2000-01-03] [APPROX] She was extubated on postoperative day three.
+Output: Approximately on 2000-01-03, she was extubated.
+
+Input:  - [2000-05-10 to 2000-05-30] [APPROX] The patient was admitted to the ICU service.
+Output: Approximately from 2000-05-10 to 2000-05-30, the patient was admitted to the
+        ICU service.
+
+Input:  - [PRE ADM] The patient was found to be unconscious.
+Output: Before admission, the patient was found to be unconscious.
+
+Input:  - [2011] [EXACT] The patient is status post knee operation in 2011.
+Output: In 2011, the patient underwent knee operation.
+
+Merging two events sharing one tag:
+Input:  - [2013-12-31] [APPROX] The patient’s social service worker recommended therapy.
+        - [2013-12-31] [APPROX] The patient’s social service worker discussed treatment plans with the patient's PCP.
+Output: Approximately on 2013-12-31, The patient’s social service worker recommended therapy and discussed treatment plans with the patient’s PCP.
+
+Subsumption:
+Input:  - [PRE ADM] The patient is female.
+        - [PRE ADM] The patient is a 58 year-old female.
+Output: (keep only the second; fold into the opening demographic sentence)
+
+Now produce the summary.

@@ -1,0 +1,84 @@
+- The patient was admitted on 2171-1-9
+- The patient was discharged on 2171-1-12
+- The patient's date of birth is 2104-6-2
+- The patient is male
+- The patient was admitted to the Medicine service
+- The patient has no known allergies
+- The patient has no known adverse drug reactions
+- The patient's attending physician was [First Name3 (LF) 80211]
+- The patient's chief complaint was shortness of breath
+- The patient had no major surgical or invasive procedure
+- The patient is 66 years old (yo)
+- The patient is male
+- The patient has chronic obstructive pulmonary disease (COPD)
+- The patient is on 2 liters (2L) of home oxygen (O2)
+- The patient presents with 3 days of worsening shortness of breath (SOB)
+- The patient presents with 3 days of productive cough
+- The patient's cough produces green sputum
+- The patient's wife noted he was more fatigued
+- The patient denies chest pain
+- The patient denies fever
+- The patient was last hospitalized for a chronic obstructive pulmonary disease (COPD) exacerbation in 2169
+- In the emergency department (ED), temperature (T) was 100.9
+- In the emergency department (ED), heart rate (HR) was 108
+- In the emergency department (ED), blood pressure (BP) was 142/84
+- In the emergency department (ED), respiratory rate (RR) was 26
+- In the emergency department (ED), oxygen saturation (SpO2) was 86% on 2 liters (2L) nasal cannula (NC)
+- In the emergency department (ED), chest X-ray (CXR) showed a right lower lobe (RLL) infiltrate
+- The patient received albuterol nebulizers (nebs) in the emergency department (ED)
+- The patient received ipratropium nebulizers (nebs) in the emergency department (ED)
+- The patient received methylprednisolone 125 mg intravenously (IV) in the emergency department (ED)
+- The patient received ceftriaxone in the emergency department (ED)
+- The patient has chronic obstructive pulmonary disease (COPD)
+- The patient is on 2 liters (2L) of home oxygen
+- The patient has hypertension
+- The patient is status post (s/p) right inguinal hernia repair
+- The patient lives with his wife
+- The patient is a former smoker
+- The patient quit smoking in 2165
+- The patient smoked for 45 pack-years
+- The patient has no alcohol use
+- The patient's family history is noncontributory
+- On physical exam, the patient was in mild respiratory distress
+- On physical exam, the patient was speaking in short sentences
+- On physical exam, the patient had diffuse expiratory wheezes
+- On physical exam, the patient had crackles at the right base
+- On physical exam, the patient was tachycardic
+- On physical exam, the patient had a regular rhythm
+- On physical exam, the patient had no murmurs
+- On 2171-1-9 at 3:20 PM white blood cell count (WBC) was 14.2
+- On 2171-1-9 at 3:20 PM hemoglobin (HGB) was 13.8
+- On 2171-1-9 at 3:20 PM platelet count (PLT) was 251
+- On 2171-1-9 at 3:20 PM glucose was 131
+- On 2171-1-9 at 3:20 PM creatinine (CREAT) was 0.9
+- On 2171-1-9 at 3:20 PM sodium was 137
+- Chest X-ray (CXR) on 2171-1-9 showed a right lower lobe opacity
+- The right lower lobe opacity on chest X-ray (CXR) was concerning for pneumonia
+- The patient had a chronic obstructive pulmonary disease (COPD) exacerbation with right lower lobe (RLL) pneumonia
+- The patient was treated with prednisone 40 mg daily
+- The patient was treated with standing nebulizers
+- The patient was treated with azithromycin
+- The patient was treated with ceftriaxone
+- The patient's antibiotics were changed to oral (PO) levofloxacin on 2171-1-11
+- The patient's oxygen (O2) requirement returned to his baseline of 2 liters (2L) by hospital day 3
+- The patient did not require bilevel positive airway pressure (BiPAP)
+- The patient has hypertension
+- The patient's lisinopril was continued
+- On admission, the patient was taking tiotropium 18 mcg inhaled daily
+- On admission, the patient was taking albuterol inhaler 2 puffs every 6 hours as needed (Q6H PRN)
+- On admission, the patient was taking lisinopril 10 mg by mouth (PO) daily
+- The patient was discharged on tiotropium 18 mcg inhaled daily
+- The patient was discharged on albuterol inhaler 2 puffs every 6 hours as needed (Q6H PRN)
+- The patient was discharged on lisinopril 10 mg by mouth (PO) daily
+- The patient was discharged on prednisone 40 mg by mouth (PO) daily for 2 more days
+- The patient was discharged on levofloxacin 750 mg by mouth (PO) daily for 3 more days
+- The patient was discharged home
+- The patient's discharge diagnosis was chronic obstructive pulmonary disease (COPD) exacerbation
+- The patient's discharge diagnosis was right lower lobe pneumonia
+- The patient's discharge condition was stable
+- The patient was discharged on his baseline 2 liters (2L) of home oxygen
+- The patient was admitted for a chronic obstructive pulmonary disease (COPD) flare
+- The patient was admitted for pneumonia
+- The patient was instructed to finish his prednisone
+- The patient was instructed to finish his levofloxacin
+- The patient is to follow up with his pulmonologist, Dr. [Last Name (STitle) 80377], on 2171-1-23 at 2:00 PM
