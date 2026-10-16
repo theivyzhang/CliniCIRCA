@@ -17,7 +17,8 @@
   Munmun De Choudhury<sup>1</sup><br>
   <sup>1</sup>Georgia Institute of Technology &nbsp;
   <sup>2</sup>University of Texas at Austin &nbsp;
-  <sup>3</sup>Northwell Health
+  <sup>3</sup>Northwell Health &nbsp;
+  <sup>4</sup>Stevens Institute of Technology
 </p>
 
 <p align="center">
